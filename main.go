@@ -6,10 +6,12 @@ import (
 	"html/template"
 )
 
+type M map[string]interface{}
+
 func handleIndex(w http.ResponseWriter, r *http.Request) {
-	var data = map[string]interface{}{
-		"title": "Learning Golang Web",
-		"name":  "Batman",
+	var data = M{
+		"title": "Portofolio",
+		"name":  "Nanda Aditya Putra",
 	}
 
 	var tmpl = template.Must(template.ParseFiles(
@@ -24,15 +26,17 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-func handleAbout(w http.ResponseWriter, r *http.Request){
-	var msg = "This is about"
-	w.Write([]byte(msg))
-}
-
 func handleContact(w http.ResponseWriter, r *http.Request){
-	var msg = "this is contact"
-	w.Write([]byte(msg))
+	var tmpl = template.Must(template.ParseFiles(
+		"views/contact.html",
+		"views/_header.html",
+		"views/_footer.html",
+	))
+	
+	var err = tmpl.ExecuteTemplate(w, "contact","")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func handlePortofolio(w http.ResponseWriter, r *http.Request){
@@ -47,7 +51,6 @@ func main() {
             http.FileServer(http.Dir("assets"))))
 
     http.HandleFunc("/", handleIndex)
-    http.HandleFunc("/about", handleAbout)
     http.HandleFunc("/contact", handleContact)
 	http.HandleFunc("/portofolio", handlePortofolio)
 
